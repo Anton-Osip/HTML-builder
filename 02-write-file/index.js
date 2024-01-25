@@ -1,20 +1,24 @@
-const fs = require("fs");
-const path = require("path");
-const {stdin, stdout, exit} = require("process")
+const fs = require('fs');
+const path = require('path');
+const { stdin, stdout } = process;
 
-stdout.write('Hi!,enter the text ... \n')
+stdout.write('Hi!,enter the text ... \n');
 
-stdin.on('data',data=>{
-    if(data.toString().trim()==='exit'){
-        exite()
-    }
-    fs.createWriteStream(path.join(__dirname,'text.txt')).write(data)
-})
+const file = path.join(__dirname, 'text.txt');
+const fileStream = fs.createWriteStream(file);
 
-process.on("SIGINT",exite)
-
-function exite(){
-    stdout.write('\nBye Bye')
-    exit()
+function close() {
+  stdout.write(`\nThe program is completed.`);
+  process.exit();
 }
 
+process.on('SIGINT', close);
+
+stdin.on('data', (data) => {
+  const text = data.toString();
+  if (text.trim() === 'exit' || text.trim() === 'EXIT') {
+    close();
+  } else {
+    fileStream.write(`${text}\n`);
+  }
+});
